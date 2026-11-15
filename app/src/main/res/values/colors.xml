@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="domsync_cream_bg">#FFFAF7F2</color>
+    <color name="domsync_dark_bg">#FF141815</color>
+    <color name="domsync_sage">#FF4E6E58</color>
+    <color name="domsync_terracotta">#FFC86D51</color>
+</resources>

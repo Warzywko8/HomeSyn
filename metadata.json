@@ -1,0 +1,6 @@
+{
+  "name": "HouseSync",
+  "description": "Zero-effort centrum dowodzenia dla par i współlokatorów: lista zakupów offline, statusy obowiązków, szybkie rozliczenia i widżet Glance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

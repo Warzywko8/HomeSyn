@@ -1,0 +1,318 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Profile of an authenticated DomSync user and their active household reference.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name shown to household members."
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "Optional profile photo URL."
+        },
+        "activeHouseholdId": {
+          "type": "string",
+          "description": "Currently joined household ID, omitted when not in a household."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["userId", "displayName", "createdAt", "updatedAt"]
+    },
+    "Household": {
+      "title": "Household",
+      "description": "Shared household workspace for couples or roommates.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Friendly name of the household."
+        },
+        "inviteCode": {
+          "type": "string",
+          "description": "6-character uppercase alphanumeric invite code."
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "UID of the user who created the household."
+        },
+        "memberUids": {
+          "type": "array",
+          "description": "Bounded list of member UIDs (1..10)."
+        },
+        "members": {
+          "type": "object",
+          "description": "Map of UID to member metadata (displayName, photoUrl, weight)."
+        },
+        "aisleOrder": {
+          "type": "array",
+          "description": "Ordered list of the 7 grocery aisle category keys."
+        },
+        "settlementCycle": {
+          "type": "integer",
+          "description": "Current active expense settlement cycle counter (>= 1)."
+        },
+        "monthlyBudgetGrosze": {
+          "type": "integer",
+          "description": "Optional shared monthly household budget cap in grosze."
+        },
+        "categoryBudgetsGrosze": {
+          "type": "object",
+          "description": "Optional map of expense category key to monthly budget limit in grosze."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["name", "inviteCode", "ownerId", "memberUids", "members", "aisleOrder", "settlementCycle", "createdAt", "updatedAt"]
+    },
+    "HouseholdInvite": {
+      "title": "HouseholdInvite",
+      "description": "Lookup index mapping a 6-character invite code to a household.",
+      "type": "object",
+      "properties": {
+        "inviteCode": {
+          "type": "string",
+          "description": "6-character invite code."
+        },
+        "householdId": {
+          "type": "string",
+          "description": "Target household document ID."
+        },
+        "householdName": {
+          "type": "string",
+          "description": "Display name of the target household."
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "UID of the household owner."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["inviteCode", "householdId", "householdName", "ownerId", "createdAt"]
+    },
+    "ShoppingItem": {
+      "title": "ShoppingItem",
+      "description": "Grocery or household shopping item with auto-assigned aisle category.",
+      "type": "object",
+      "properties": {
+        "householdId": {
+          "type": "string",
+          "description": "Parent household ID."
+        },
+        "memberUids": {
+          "type": "array",
+          "description": "Denormalized household member UIDs for fast offline/online rules."
+        },
+        "name": {
+          "type": "string",
+          "description": "Normalized product name."
+        },
+        "quantityText": {
+          "type": "string",
+          "description": "Optional parsed quantity and unit (e.g. '2 l', '1 kg')."
+        },
+        "category": {
+          "type": "string",
+          "enum": ["VEG_FRUIT", "BAKERY", "DAIRY", "MEAT_FISH", "DRY_GOODS", "HOME_CHEM", "OTHER"],
+          "description": "Store aisle category."
+        },
+        "isPurchased": {
+          "type": "boolean",
+          "description": "Whether the item has been checked off into Recently Purchased."
+        },
+        "addedByUid": {
+          "type": "string",
+          "description": "UID of the member who added the item."
+        },
+        "addedByName": {
+          "type": "string",
+          "description": "Display name of the member who added the item."
+        },
+        "purchasedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Optional server timestamp when purchased."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["householdId", "memberUids", "name", "quantityText", "category", "isPurchased", "addedByUid", "addedByName", "createdAt", "updatedAt"]
+    },
+    "ChoreTile": {
+      "title": "ChoreTile",
+      "description": "Recurring household micro-chore tile with auto-reset schedule and widget pin flag.",
+      "type": "object",
+      "properties": {
+        "householdId": {
+          "type": "string",
+          "description": "Parent household ID."
+        },
+        "memberUids": {
+          "type": "array",
+          "description": "Denormalized household member UIDs."
+        },
+        "title": {
+          "type": "string",
+          "description": "Chore title (e.g. 'Pies nakarmiony')."
+        },
+        "iconKey": {
+          "type": "string",
+          "description": "Icon identifier key."
+        },
+        "isPinnedToWidget": {
+          "type": "boolean",
+          "description": "Whether this tile is pinned to the Glance home screen widget."
+        },
+        "resetMode": {
+          "type": "string",
+          "enum": ["NONE", "DAILY_MIDNIGHT", "SCHEDULED_HOURS"],
+          "description": "Automatic reset rule."
+        },
+        "resetHours": {
+          "type": "array",
+          "description": "Hours of day (0..23) when SCHEDULED_HOURS resets occur."
+        },
+        "lastCompletedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Optional server timestamp of last completion."
+        },
+        "lastCompletedByUid": {
+          "type": "string",
+          "description": "Optional UID of member who last completed the chore."
+        },
+        "lastCompletedByName": {
+          "type": "string",
+          "description": "Optional display name of member who last completed the chore."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["householdId", "memberUids", "title", "iconKey", "isPinnedToWidget", "resetMode", "resetHours", "createdAt", "updatedAt"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Shared household expense logged in grosze for exact integer split math.",
+      "type": "object",
+      "properties": {
+        "householdId": {
+          "type": "string",
+          "description": "Parent household ID."
+        },
+        "memberUids": {
+          "type": "array",
+          "description": "Denormalized household member UIDs."
+        },
+        "amountGrosze": {
+          "type": "integer",
+          "description": "Expense amount in Polish grosze (1 PLN = 100 grosze)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Short expense description (e.g. 'Biedronka')."
+        },
+        "paidByUid": {
+          "type": "string",
+          "description": "UID of the member who paid."
+        },
+        "paidByName": {
+          "type": "string",
+          "description": "Display name of the member who paid."
+        },
+        "cycleNumber": {
+          "type": "integer",
+          "description": "Settlement cycle number matching Household.settlementCycle."
+        },
+        "category": {
+          "type": "string",
+          "enum": ["GROCERIES", "BILLS", "FOOD_OUT", "TRANSPORT", "HOME_HEALTH", "OTHER"],
+          "description": "Optional expense budget category."
+        },
+        "createdByUid": {
+          "type": "string",
+          "description": "UID of the member who logged this expense."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["householdId", "memberUids", "amountGrosze", "description", "paidByUid", "paidByName", "cycleNumber", "createdByUid", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Per-user profile and active household pointer."
+    },
+    "/householdInvites/{inviteCode}": {
+      "schema": { "$ref": "#/entities/HouseholdInvite" },
+      "description": "Lookup document mapping a 6-char invite code to a household."
+    },
+    "/households/{householdId}": {
+      "schema": { "$ref": "#/entities/Household" },
+      "description": "Shared household root document."
+    },
+    "/households/{householdId}/shoppingItems/{itemId}": {
+      "schema": { "$ref": "#/entities/ShoppingItem" },
+      "description": "Shopping list items scoped to a household."
+    },
+    "/households/{householdId}/choreTiles/{choreId}": {
+      "schema": { "$ref": "#/entities/ChoreTile" },
+      "description": "Recurring micro-chore status tiles scoped to a household."
+    },
+    "/households/{householdId}/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/Expense" },
+      "description": "Shared household expenses scoped to a household."
+    }
+  }
+}
